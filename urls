@@ -1,0 +1,29 @@
+# console log
+http://localhost:8080/job/Test/2/logText/progressiveText?start=0
+X-More-Data: true
+X-Text-Size: 
+
+Pulls down whole log, More-Data tells you there is more to come potentially.
+
+# build queue
+http://localhost:8080/queue/api/
+http://localhost:8080/queue/api/xml?tree=jobs[name],views[name,jobs[name]]
+
+# load statistics
+http://localhost:8080/overallLoad/api/json?pretty=true
+
+Probably after queuelength
+
+# note: workflow plugin API data
+# not going to work for non pipeline projects
+# 404's
+https://jenkins.cv-library.co.uk/job/cvl/wfapi/runs
+https://stackoverflow.com/questions/37009906/access-stage-results-in-workflow-pipeline-plugin
+https://github.com/jenkinsci/pipeline-stage-view-plugin/blob/master/rest-api/README.md
+
+
+https://jenkins.cv-library.co.uk/job/cvl-gerrit/buildHistory/ajax
+
+https://jenkins.cv-library.co.uk/job/cvl-gerrit/timeline/data/
+https://jenkins.cv-library.co.uk/job/cvl-gerrit/buildTimeTrend
+
