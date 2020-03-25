@@ -19,7 +19,8 @@ func main() {
 		JenkinsURL: "http://localhost:8080",
 	}
 
-	text, err := j.ConsoleLog("cvl-gerrit", 1003)
+	urls, err := j.Runs("test")
+	//text, err := j.ConsoleLog("cvl-gerrit", 1003)
 	if err != nil {
 		log.Fatal(err)
 	}
