@@ -9,6 +9,8 @@ Pulls down whole log, More-Data tells you there is more to come potentially.
 http://localhost:8080/queue/api/
 http://localhost:8080/queue/api/xml?tree=jobs[name],views[name,jobs[name]]
 
+http://localhost:8080/job/test/api/json?tree=builds
+
 # load statistics
 http://localhost:8080/overallLoad/api/json?pretty=true
 
@@ -26,4 +28,8 @@ https://jenkins.cv-library.co.uk/job/cvl-gerrit/buildHistory/ajax
 
 https://jenkins.cv-library.co.uk/job/cvl-gerrit/timeline/data/
 https://jenkins.cv-library.co.uk/job/cvl-gerrit/buildTimeTrend
+
+
+curl -uadmin:119f8713bc75a829dbc4df57170ed8f5a3 'http://localhost:8080/job/test/api/json?tree=builds[url]' | jq
+curl -uadmin:119f8713bc75a829dbc4df57170ed8f5a3 http://localhost:8080/job/test/2/logText/progressiveText?start=0
 
