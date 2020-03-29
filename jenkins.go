@@ -1,6 +1,7 @@
 package jenkins_health
 
 import (
+	"encoding/json"
 	"fmt"
 
 	resty "github.com/go-resty/resty/v2"
@@ -9,6 +10,14 @@ import (
 type JenkinsAPI struct {
 	Client     resty.Client
 	JenkinsURL string
+}
+
+type build struct {
+	Url string `json:"url"`
+}
+
+type runs struct {
+	Builds []build `json:"build"`
 }
 
 func (jenkins *JenkinsAPI) Runs(jobName string) ([]string, error) {
@@ -20,7 +29,20 @@ func (jenkins *JenkinsAPI) Runs(jobName string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+	if r.IsError() {
+		return nil, fmt.Errorf("Error getting job runs: %s - %s", r.Status(), r)
+	}
+	// unmarshal the json
+	var v runs
+	err = json.Unmarshal(r.Body(), &v)
+	if err != nil {
+		return nil, err
+	}
+	urls := make([]string, len(v.Builds))
+	for i := 0; i < len(v.Builds); i++ {
+		urls[i] = v.Builds[i].Url
+	}
+	return urls, nil
 }
 
 func (jenkins *JenkinsAPI) ConsoleLog(jobName string, buildUrl string) (string, error) {
