@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	jenkins "github.com/colinnewell/jenkins-queue-health/jenkins"
+	"github.com/colinnewell/jenkins-queue-health/jenkins"
 	resty "github.com/go-resty/resty/v2"
 )
 
