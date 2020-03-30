@@ -1,9 +1,10 @@
-package jenkins_health
+package main
 
 import (
 	"fmt"
 	"log"
 
+	jenkins "github.com/colinnewell/jenkins-queue-health/jenkins"
 	resty "github.com/go-resty/resty/v2"
 )
 
@@ -13,8 +14,8 @@ func main() {
 	// console log
 	// can I get timing info?  Mathew mentioned that was somewhere
 	client := resty.New()
-	client.SetBasicAuth("uadmin", "119f8713bc75a829dbc4df57170ed8f5a3")
-	j := &JenkinsAPI{
+	client.SetBasicAuth("admin", "119f8713bc75a829dbc4df57170ed8f5a3")
+	j := &jenkins.JenkinsAPI{
 		Client:     client,
 		JenkinsURL: "http://localhost:8080",
 	}
@@ -24,5 +25,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(text)
+	fmt.Printf("%#v", urls)
+	//fmt.Println(text)
 }

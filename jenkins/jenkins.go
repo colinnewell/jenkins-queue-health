@@ -1,4 +1,4 @@
-package jenkins_health
+package jenkins
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 )
 
 type JenkinsAPI struct {
-	Client     resty.Client
+	Client     *resty.Client
 	JenkinsURL string
 }
 
@@ -17,7 +17,7 @@ type build struct {
 }
 
 type runs struct {
-	Builds []build `json:"build"`
+	Builds []build `json:"builds"`
 }
 
 func (jenkins *JenkinsAPI) Runs(jobName string) ([]string, error) {
@@ -46,6 +46,6 @@ func (jenkins *JenkinsAPI) Runs(jobName string) ([]string, error) {
 }
 
 func (jenkins *JenkinsAPI) ConsoleLog(jobName string, buildUrl string) (string, error) {
-	url := fmt.Sprintf("%s/logText/progressiveText?start=0", buildUrl)
+	//url := fmt.Sprintf("%s/logText/progressiveText?start=0", buildUrl)
 	return "", nil
 }
