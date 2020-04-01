@@ -21,10 +21,16 @@ func main() {
 	}
 
 	urls, err := j.Runs("test")
-	//text, err := j.ConsoleLog("cvl-gerrit", 1003)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("%#v", urls)
-	//fmt.Println(text)
+	for i := range urls {
+		logmsg, err := j.ConsoleLog(urls[i])
+		if err != nil {
+			// FIXME: Fatal is a bit lame
+			log.Fatal(err)
+		}
+		log.Printf("%s: %s\n", urls[i], logmsg)
+	}
 }

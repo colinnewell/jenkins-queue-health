@@ -30,7 +30,9 @@ func (jenkins *JenkinsAPI) Runs(jobName string) ([]string, error) {
 		return nil, err
 	}
 	if r.IsError() {
-		return nil, fmt.Errorf("Error getting job runs: %s - %s", r.Status(), r)
+		return nil, fmt.Errorf(
+			"Error getting job runs: %s - %s", r.Status(), r,
+		)
 	}
 	// unmarshal the json
 	var v runs
@@ -45,7 +47,16 @@ func (jenkins *JenkinsAPI) Runs(jobName string) ([]string, error) {
 	return urls, nil
 }
 
-func (jenkins *JenkinsAPI) ConsoleLog(jobName string, buildUrl string) (string, error) {
-	//url := fmt.Sprintf("%s/logText/progressiveText?start=0", buildUrl)
-	return "", nil
+func (jenkins *JenkinsAPI) ConsoleLog(buildUrl string) (string, error) {
+	url := fmt.Sprintf("%s/logText/progressiveText?start=0", buildUrl)
+	r, err := jenkins.Client.R().Get(url)
+	if err != nil {
+		return "", err
+	}
+	if r.IsError() {
+		return "", fmt.Errorf(
+			"Error getting console: %s - %s", r.Status(), r,
+		)
+	}
+	return r.String(), nil
 }
