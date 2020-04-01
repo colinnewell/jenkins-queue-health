@@ -25,12 +25,12 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Printf("%#v", urls)
-	for i := range urls {
-		logmsg, err := j.ConsoleLog(urls[i])
+	for _, url := range urls {
+		logmsg, err := j.ConsoleLog(url)
 		if err != nil {
 			// FIXME: Fatal is a bit lame
 			log.Fatal(err)
 		}
-		log.Printf("%s: %s\n", urls[i], logmsg)
+		log.Printf("%s: %s\n", url, logmsg)
 	}
 }
