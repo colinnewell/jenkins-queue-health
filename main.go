@@ -10,13 +10,15 @@ import (
 	resty "github.com/go-resty/resty/v2"
 )
 
-var user string
 var password string
+var project string
 var url string
+var user string
 
 func main() {
 	flag.StringVar(&user, "user", "", "Username")
 	flag.StringVar(&password, "password", "", "Token password")
+	flag.StringVar(&project, "project", "", "Jenkins project")
 	flag.StringVar(&url, "url", "http://localhost:8080", "Jenkins url")
 	flag.Parse()
 
@@ -30,7 +32,7 @@ func main() {
 		JenkinsURL: url,
 	}
 
-	urls, err := j.Runs("test")
+	urls, err := j.Runs(project)
 	if err != nil {
 		log.Fatal(err)
 	}
