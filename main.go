@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -15,6 +16,7 @@ func main() {
 	// can I get timing info?  Mathew mentioned that was somewhere
 	client := resty.New()
 	client.SetBasicAuth("admin", "119f8713bc75a829dbc4df57170ed8f5a3")
+	client.SetDisableWarn(true)
 	j := &jenkins.API{
 		Client:     client,
 		JenkinsURL: "http://localhost:8080",
@@ -24,21 +26,25 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%#v", urls)
+	var builds []jenkins.BuildInfo
 	for _, url := range urls {
-		// grab the build info.
-
 		build, err := j.BuildInfo(url)
 		if err != nil {
 			log.Fatal(err)
 		}
 		if build.Result != "SUCCESS" {
 			err := j.ConsoleLog(&build)
+			// check what the deal is with the log
 			if err != nil {
 				// FIXME: Fatal is a bit lame
 				log.Fatal(err)
 			}
-			log.Printf("%s: %s\n", url, build.ConsoleLog)
+			builds = append(builds, build)
 		}
 	}
+	bytes, err := json.Marshal(builds)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(string(bytes))
 }

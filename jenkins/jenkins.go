@@ -7,7 +7,7 @@ import (
 	resty "github.com/go-resty/resty/v2"
 )
 
-// API API object
+// API struct for downloading info from Jenkins
 type API struct {
 	Client     *resty.Client
 	JenkinsURL string
@@ -29,8 +29,8 @@ type BuildInfo struct {
 	Id              string `json:"id"`
 	Result          string `json:"result"`
 	Timestamp       int    `json:"timestamp"`
-	ConsoleLog      string
-	URL             string
+	ConsoleLog      string `json:"log"`
+	URL             string `json:"url"`
 	// FIXME: need to find structure for this.
 	//	ChangeSet       string `json:changeSet`
 }
