@@ -15,7 +15,7 @@ func main() {
 	// can I get timing info?  Mathew mentioned that was somewhere
 	client := resty.New()
 	client.SetBasicAuth("admin", "119f8713bc75a829dbc4df57170ed8f5a3")
-	j := &jenkins.JenkinsAPI{
+	j := &jenkins.API{
 		Client:     client,
 		JenkinsURL: "http://localhost:8080",
 	}
@@ -26,11 +26,19 @@ func main() {
 	}
 	fmt.Printf("%#v", urls)
 	for _, url := range urls {
-		logmsg, err := j.ConsoleLog(url)
+		// grab the build info.
+
+		build, err := j.BuildInfo(url)
 		if err != nil {
-			// FIXME: Fatal is a bit lame
 			log.Fatal(err)
 		}
-		log.Printf("%s: %s\n", url, logmsg)
+		if build.Result != "SUCCESS" {
+			err := j.ConsoleLog(&build)
+			if err != nil {
+				// FIXME: Fatal is a bit lame
+				log.Fatal(err)
+			}
+			log.Printf("%s: %s\n", url, build.ConsoleLog)
+		}
 	}
 }
