@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 
@@ -9,17 +10,24 @@ import (
 	resty "github.com/go-resty/resty/v2"
 )
 
+var user string
+var password string
+var url string
+
 func main() {
-	// talk to jenkins and grab jobs.
-	// job number, pass/fail, failure type, time to run, machine
-	// console log
-	// can I get timing info?  Mathew mentioned that was somewhere
+	flag.StringVar(&user, "user", "", "Username")
+	flag.StringVar(&password, "password", "", "Token password")
+	flag.StringVar(&url, "url", "http://localhost:8080", "Jenkins url")
+	flag.Parse()
+
 	client := resty.New()
-	client.SetBasicAuth("admin", "119f8713bc75a829dbc4df57170ed8f5a3")
-	client.SetDisableWarn(true)
+	if user != "" && password != "" {
+		client.SetBasicAuth(user, password)
+		client.SetDisableWarn(true)
+	}
 	j := &jenkins.API{
 		Client:     client,
-		JenkinsURL: "http://localhost:8080",
+		JenkinsURL: url,
 	}
 
 	urls, err := j.Runs("test")
