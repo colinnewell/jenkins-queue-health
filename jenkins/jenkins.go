@@ -3,6 +3,7 @@ package jenkins
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 
 	resty "github.com/go-resty/resty/v2"
 )
@@ -64,7 +65,7 @@ func (jenkins *API) Runs(jobName string) ([]string, error) {
 
 // ConsoleLog fills in the builds ConsoleLog.
 func (jenkins *API) ConsoleLog(build *BuildInfo) error {
-	url := fmt.Sprintf("%s/logText/progressiveText?start=0", build.URL)
+	url := fmt.Sprintf("%slogText/progressiveText?start=0", build.URL)
 	r, err := jenkins.Client.R().Get(url)
 	if err != nil {
 		return err
@@ -79,10 +80,10 @@ func (jenkins *API) ConsoleLog(build *BuildInfo) error {
 }
 
 // BuildInfo gather the headline build info from the build url
-func (jenkins *API) BuildInfo(buildUrl string) (BuildInfo, error) {
+func (jenkins *API) GetBuildInfo(buildUrl string) (BuildInfo, error) {
 	b := BuildInfo{URL: buildUrl}
 
-	url := fmt.Sprintf("%s/api/json?tree=id,fullDisplayName,result,timestamp,builtOn,changeSet,duration", buildUrl)
+	url := fmt.Sprintf("%sapi/json?tree=id,fullDisplayName,result,timestamp,builtOn,changeSet,duration", buildUrl)
 	r, err := jenkins.Client.R().Get(url)
 	if err != nil {
 		return b, err
@@ -95,4 +96,31 @@ func (jenkins *API) BuildInfo(buildUrl string) (BuildInfo, error) {
 
 	err = json.Unmarshal(r.Body(), &b)
 	return b, err
+}
+
+func (jenkins *API) BuildsForProject(project string) ([]BuildInfo, error) {
+	urls, err := jenkins.Runs(project)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var builds []BuildInfo
+	for _, url := range urls {
+		build, err := jenkins.GetBuildInfo(url)
+		if err != nil {
+			return builds, err
+		}
+		if build.Result != "SUCCESS" {
+			err := jenkins.ConsoleLog(&build)
+			// check what the deal is with the log
+			if err != nil {
+				// FIXME: Fatal is a bit lame
+				return builds, err
+			}
+			// FIXME: examine the build in more detail
+			// grab failed tests
+			// look for spurious failures
+			builds = append(builds, build)
+		}
+	}
+	return builds, nil
 }

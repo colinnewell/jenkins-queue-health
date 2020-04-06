@@ -32,29 +32,14 @@ func main() {
 		JenkinsURL: url,
 	}
 
-	urls, err := j.Runs(project)
+	builds, err := j.BuildsForProject(project)
 	if err != nil {
 		log.Fatal(err)
-	}
-	var builds []jenkins.BuildInfo
-	for _, url := range urls {
-		build, err := j.BuildInfo(url)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if build.Result != "SUCCESS" {
-			err := j.ConsoleLog(&build)
-			// check what the deal is with the log
-			if err != nil {
-				// FIXME: Fatal is a bit lame
-				log.Fatal(err)
-			}
-			builds = append(builds, build)
-		}
 	}
 	bytes, err := json.Marshal(builds)
 	if err != nil {
 		log.Fatal(err)
 	}
+	// fIXME: potentially output in different formats
 	fmt.Println(string(bytes))
 }
