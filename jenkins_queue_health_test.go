@@ -19,13 +19,10 @@ var _ = Describe("Jenkins Client", func() {
 	client.SetTransport(httpmock.DefaultTransport)
 	defer httpmock.DeactivateAndReset()
 
-	var _ = Describe("Get Builds", func() {
+	var j *jenkins.API
 
-		var err error
-		var j *jenkins.API
-
-		var _ = BeforeEach(func() {
-			httpmock.RegisterResponder("GET", "http://test/job/test/api/json?tree=builds[url]", httpmock.NewStringResponder(200, `{
+	var _ = BeforeEach(func() {
+		httpmock.RegisterResponder("GET", "http://test/job/test/api/json?tree=builds[url]", httpmock.NewStringResponder(200, `{
 			  "_class": "hudson.model.FreeStyleProject",
 			  "builds": [
 				{
@@ -38,7 +35,7 @@ var _ = Describe("Jenkins Client", func() {
 				}
 			  ]
 			}`))
-			httpmock.RegisterResponder("GET", `=~^http://test/job/test/\d+/api/json`, httpmock.NewStringResponder(200, `{
+		httpmock.RegisterResponder("GET", `=~^http://test/job/test/\d+/api/json`, httpmock.NewStringResponder(200, `{
   "_class": "hudson.model.FreeStyleBuild",
   "duration": 73,
   "fullDisplayName": "test #3",
@@ -48,19 +45,20 @@ var _ = Describe("Jenkins Client", func() {
   "builtOn": "machine1",
   "changeSet": { "_class": "hudson.scm.EmptyChangeLogSet" }
 			}`))
-			httpmock.RegisterResponder("GET", `=~^http://test/job/test/\d+/logText`, httpmock.NewStringResponder(200, `FAIL`))
-			dt := httpmock.DefaultTransport
-			client.SetTransport(dt)
+		httpmock.RegisterResponder("GET", `=~^http://test/job/test/\d+/logText`, httpmock.NewStringResponder(200, `FAIL`))
+		dt := httpmock.DefaultTransport
+		client.SetTransport(dt)
 
-			j = &jenkins.API{
-				Client:     client,
-				JenkinsURL: "http://test",
-			}
-		})
+		j = &jenkins.API{
+			Client:     client,
+			JenkinsURL: "http://test",
+		}
+	})
+
+	var _ = Describe("Get Builds", func() {
 
 		It("Should retrieve a list of builds", func() {
-			var builds []jenkins.BuildInfo
-			builds, err = j.BuildsForProject("test")
+			builds, err := j.BuildsForProject("test")
 
 			expected := []jenkins.BuildInfo{
 				{
@@ -85,12 +83,27 @@ var _ = Describe("Jenkins Client", func() {
 				},
 			}
 			Expect(builds).To(Equal(expected))
-		})
-
-		It("should not error", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
+	})
 
-		//
+	var _ = Describe("GetBuildInfo", func() {
+
+		It("Should return headling info about a build", func() {
+			build, err := j.GetBuildInfo("http://test/job/test/1/")
+
+			expected := jenkins.BuildInfo{
+				BuiltOn:         "machine1",
+				Duration:        73,
+				FullDisplayName: "test #3",
+				Id:              "3",
+				Result:          "FAILURE",
+				Timestamp:       1585940109411,
+				ConsoleLog:      "",
+				URL:             "http://test/job/test/1/",
+			}
+			Expect(build).To(Equal(expected))
+			Expect(err).NotTo(HaveOccurred())
+		})
 	})
 })
