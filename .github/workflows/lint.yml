@@ -3,7 +3,6 @@ name: Lint
 jobs:
   lint:
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Run golangci-lint
-      uses: actions-contrib/golangci-lint@v1
+      - uses: actions/checkout@v2
+      - name: Run golangci-lint
+        uses: actions-contrib/golangci-lint@v1
