@@ -40,6 +40,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// fIXME: potentially output in different formats
+	// FIXME: potentially output in different formats
 	fmt.Println(string(bytes))
 }

@@ -110,17 +110,13 @@ func (jenkins *API) BuildsForProject(project string) ([]BuildInfo, error) {
 			return builds, err
 		}
 		if build.Result != "SUCCESS" {
+			// grab log so we can examine reasons for failure
 			err := jenkins.ConsoleLog(&build)
-			// check what the deal is with the log
 			if err != nil {
-				// FIXME: Fatal is a bit lame
 				return builds, err
 			}
-			// FIXME: examine the build in more detail
-			// grab failed tests
-			// look for spurious failures
-			builds = append(builds, build)
 		}
+		builds = append(builds, build)
 	}
 	return builds, nil
 }
