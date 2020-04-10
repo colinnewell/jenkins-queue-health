@@ -10,7 +10,7 @@ of the pipeline.
 
 ## Building
 
-On \*nix platforms with Make make use of the Mafefile.
+On \*nix platforms with Make use the `Makefile`.
 
 ```
 make && make test && sudo make install
