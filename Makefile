@@ -5,3 +5,6 @@ jenkins-queue-health: main.go jenkins/jenkins.go
 
 test:
 	go test
+
+install:
+	cp jenkins-queue-health /usr/local/bin
