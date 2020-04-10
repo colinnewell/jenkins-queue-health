@@ -1,4 +1,4 @@
-all: jenkins-queue-health test
+all: jenkins-queue-health
 
 jenkins-queue-health: main.go jenkins/jenkins.go
 	go build -o jenkins-queue-health main.go
