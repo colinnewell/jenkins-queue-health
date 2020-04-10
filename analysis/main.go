@@ -56,5 +56,6 @@ func processFiles(files []string) error {
 func readBuild(fileContents []byte) ([]jenkins.BuildInfo, error) {
 	var builds []jenkins.BuildInfo
 
-	return builds, nil
+	err := json.Unmarshal(fileContents, &builds)
+	return builds, err
 }
