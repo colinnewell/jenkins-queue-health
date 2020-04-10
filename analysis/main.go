@@ -22,11 +22,11 @@ func processFiles(files []string) error {
 	if len(files) == 0 {
 		dat, err := ioutil.ReadAll(os.Stdin)
 		if err != nil {
-			return fmt.Errorf("Failed to read from stdin", err)
+			return fmt.Errorf("Failed to read from stdin - %v", err)
 		}
 		builds, err = readBuild(dat)
 		if err != nil {
-			return fmt.Errorf("Failed to process %v", err)
+			return fmt.Errorf("Failed to process - %v", err)
 		}
 	} else {
 		for _, f := range files {
