@@ -41,6 +41,8 @@ An analysis tool is being built to process the output further.
 
 ```
 jenkins-queue-health-analysis builds.json
+jenkins-queue-health-analysis fails.json | jq '.[] | select( .spuriousFail == false) | .failureSummary '
+
 ```
 
 ## Current ideas
