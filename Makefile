@@ -1,6 +1,8 @@
 all: jenkins-queue-health jenkins-queue-health-analysis
 
-jenkins-queue-health-analysis: analysis/cli/main.go jenkins/jenkins.go
+jenkins-queue-health-analysis: analysis/cli/main.go jenkins/jenkins.go \
+	analysis/build.go analysis/human/human.go analysis/yath/yath.go \
+	analysis/spurious/spurious.go
 	go build -o jenkins-queue-health-analysis analysis/cli/main.go
 
 jenkins-queue-health: main.go jenkins/jenkins.go

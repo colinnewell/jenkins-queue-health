@@ -12,7 +12,7 @@ type Analyser interface {
 
 // AnalysedBuild struct with extra information about builds
 type AnalysedBuild struct {
-	SpuriousFail bool `json:"spuriosFail"`
+	SpuriousFail bool `json:"spuriousFail"`
 	// divide up the console log into parts.
 	// prelude
 	// logs after
