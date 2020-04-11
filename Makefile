@@ -8,6 +8,7 @@ jenkins-queue-health: main.go jenkins/jenkins.go
 
 lint:
 	golangci-lint run
+	golint ./...
 
 test:
 	go test

@@ -27,9 +27,9 @@ type BuildInfo struct {
 	BuiltOn         string `json:"builtOn"`
 	Duration        int64  `json:"duration"`
 	FullDisplayName string `json:"fullDisplayName"`
-	Id              string `json:"id"`
+	ID              string `json:"id"`
 	Result          string `json:"result"`
-	Timestamp       int    `json:"timestamp"`
+	Timestamp       int64  `json:"timestamp"`
 	ConsoleLog      string `json:"log"`
 	URL             string `json:"url"`
 	// FIXME: need to find structure for this.
@@ -79,11 +79,11 @@ func (jenkins *API) ConsoleLog(build *BuildInfo) error {
 	return nil
 }
 
-// BuildInfo gather the headline build info from the build url
-func (jenkins *API) GetBuildInfo(buildUrl string) (BuildInfo, error) {
-	b := BuildInfo{URL: buildUrl}
+// GetBuildInfo gather the headline build info from the build url
+func (jenkins *API) GetBuildInfo(buildURL string) (BuildInfo, error) {
+	b := BuildInfo{URL: buildURL}
 
-	url := fmt.Sprintf("%sapi/json?tree=id,fullDisplayName,result,timestamp,builtOn,changeSet,duration", buildUrl)
+	url := fmt.Sprintf("%sapi/json?tree=id,fullDisplayName,result,timestamp,builtOn,changeSet,duration", buildURL)
 	r, err := jenkins.Client.R().Get(url)
 	if err != nil {
 		return b, err

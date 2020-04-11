@@ -4,10 +4,13 @@ import (
 	"github.com/colinnewell/jenkins-queue-health/jenkins"
 )
 
+// Analyser interface for processing the build info, making the raw information
+// more easily digested.
 type Analyser interface {
 	AnalyseBuild(AnalysedBuild) error
 }
 
+// AnalysedBuild struct with extra information about builds
 type AnalysedBuild struct {
 	SpuriousFail bool `json:"spuriosFail"`
 	// divide up the console log into parts.
@@ -24,10 +27,8 @@ type AnalysedBuild struct {
 	jenkins.BuildInfo
 }
 
-type JobConfig struct {
-	JobRegex string
-}
-
+// AnalyseBuild turn the BuildInfo object into an AnalysedBuild one with extra
+// info to be filled in during analysis
 func AnalyseBuild(build jenkins.BuildInfo) AnalysedBuild {
 	b := AnalysedBuild{BuildInfo: build}
 	return b
