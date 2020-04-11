@@ -11,11 +11,6 @@ import (
 
 var _ = Describe("Analysis/Yath/Yath", func() {
 
-	var a Analyser
-	var _ = BeforeEach(func() {
-		a = Analyser{}
-	})
-
 	var _ = Describe("With a test failure", func() {
 		consoleSnippet := `
 Triggered by Gerrit: https://gerrit/c/repo/+/62501
@@ -58,18 +53,31 @@ Run ID: CBE22A3E-75CD-11EA-9047-B53E7E167E9F
 
 The following test jobs failed:
   [CBEDFF26-75CD-11EA-9047-B53E7E167E9F] 378: t/unit/web/blah/some_search.t
+  [CBEDFF26-75CD-11EA-9047-B53E7E167E9F] 379: t/unit/web/blah/another_search.t
 
 ESC[0m
 40.0690s on wallclock (9.34 usr 1.35 sys + 161.03 cusr 71.00 csys = 242.72 CPU)
 
 Build step 'Execute shell' marked build as failure
+The following test jobs failed:
+  [CBEDFF26-75CD-11EA-9047-B53E7E167E0F] 378: t/unit/web/blah/some_search.t
+  [CBEDFF26-75CD-11EA-9047-B53E7E167E0F] 379: t/unit/web/blah/another_search.t
+
+ESC[0m
 `
 
 		It("Should extract test failures", func() {
 			build := analysis.AnalysedBuild{BuildInfo: jenkins.BuildInfo{ConsoleLog: consoleSnippet}}
+			var a Analyser
 			err := a.AnalyseBuild(&build)
 
-			Expect(build.FailureSummary).To(Equal([]string{"t/unit/web/blah/some_search.t"}))
+			Expect(build.FailureSummary).To(Equal(`The following test jobs failed:
+  [CBEDFF26-75CD-11EA-9047-B53E7E167E9F] 378: t/unit/web/blah/some_search.t
+  [CBEDFF26-75CD-11EA-9047-B53E7E167E9F] 379: t/unit/web/blah/another_search.t
+The following test jobs failed:
+  [CBEDFF26-75CD-11EA-9047-B53E7E167E0F] 378: t/unit/web/blah/some_search.t
+  [CBEDFF26-75CD-11EA-9047-B53E7E167E0F] 379: t/unit/web/blah/another_search.t
+`))
 			Expect(err).NotTo(HaveOccurred())
 		})
 	})
