@@ -36,3 +36,16 @@ intention is to move a large chunk of that into the tooling.
 ```
 jq '.[] | select(.log | contains("Solr request failed - Timed out while waiting for socket to become ready for reading")) | { builtOn: .builtOn, timestamp: (.timestamp / 1000 | strftime("%Y-%m-%d %H:%M:%S")), build: .fullDisplayName }' "$1"
 ```
+
+## Current ideas
+
+* Make it easier to spot the failure in a massive console log.  Have lots of
+  log can be useful for spotting the problem ultimately, but you have to wade
+  through a lot initially just to figure out what failed.
+* Make some of the raw data more readable.  Times/durations etc.
+* Add config for different jobs.  Different jobs will have different test
+  output formats, or different indicators of a sprurious failure.
+* Point the tool at a specific build url to determine the failure info.
+* Point it at a job to find the reliability of the builds as a whole.  Ideally
+  being able to store past builds to allow for a good overally picture to
+  emerge.
