@@ -5,7 +5,7 @@ import (
 )
 
 type AnalysedBuild struct {
-	SpuriousFail bool
+	SpuriousFail bool `json:"spuriosFail"`
 	// divide up the console log into parts.
 	// prelude
 	// logs after
@@ -13,11 +13,17 @@ type AnalysedBuild struct {
 	// passed test list
 	// provide clearer info from the exisitng field
 	// More human readable version of when the build was run
-	TimeRunReadable  string
-	DurationReadable string
+	TimeRunReadable  string `json:"timeReadable"`
+	DurationReadable string `json:"durationReadable"`
 
 	jenkins.BuildInfo
 }
 
-func AnalyseBuild(build jenkins.BuildInfo) {
+type JobConfig struct {
+	JobRegex string
+}
+
+func AnalyseBuild(build jenkins.BuildInfo) AnalysedBuild {
+	b := AnalysedBuild{BuildInfo: build}
+	return b
 }

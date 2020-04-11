@@ -39,6 +39,9 @@ jq '.[] | select(.log | contains("Solr request failed - Timed out while waiting 
 
 ## Current ideas
 
+I'm not sure that these will all pan out, but these are applications I can
+think of that would benefit from being able to analyse Jenkins build results.
+
 * Make it easier to spot the failure in a massive console log.  Have lots of
   log can be useful for spotting the problem ultimately, but you have to wade
   through a lot initially just to figure out what failed.
@@ -49,3 +52,7 @@ jq '.[] | select(.log | contains("Solr request failed - Timed out while waiting 
 * Point it at a job to find the reliability of the builds as a whole.  Ideally
   being able to store past builds to allow for a good overally picture to
   emerge.
+* Spot signs of failure that don't actually result in a recorded failure (this
+  would require analysing succesfull logs too).
+* Early warning on builds running and failing.  Especially useful for things
+  that retry.

@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/colinnewell/jenkins-queue-health/analysis"
 	"github.com/colinnewell/jenkins-queue-health/jenkins"
 )
 
@@ -18,7 +19,7 @@ func main() {
 }
 
 func processFiles(files []string) error {
-	var builds []jenkins.BuildInfo
+	var builds []analysis.AnalysedBuild
 	if len(files) == 0 {
 		dat, err := ioutil.ReadAll(os.Stdin)
 		if err != nil {
@@ -53,9 +54,19 @@ func processFiles(files []string) error {
 	return nil
 }
 
-func readBuild(fileContents []byte) ([]jenkins.BuildInfo, error) {
+func readBuild(fileContents []byte) ([]analysis.AnalysedBuild, error) {
 	var builds []jenkins.BuildInfo
+	var analysed []analysis.AnalysedBuild
 
 	err := json.Unmarshal(fileContents, &builds)
-	return builds, err
+	if err != nil {
+		return analysed, err
+	}
+	analysed = make([]analysis.AnalysedBuild, len(builds))
+	for i, b := range builds {
+		// FIXME: do I want to allow some optimisation based on job?
+		// perhaps have some kind of analyser object?
+		analysed[i] = analysis.AnalyseBuild(b)
+	}
+	return analysed, err
 }
