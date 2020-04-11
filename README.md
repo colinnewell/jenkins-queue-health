@@ -37,6 +37,12 @@ intention is to move a large chunk of that into the tooling.
 jq '.[] | select(.log | contains("Solr request failed - Timed out while waiting for socket to become ready for reading")) | { builtOn: .builtOn, timestamp: (.timestamp / 1000 | strftime("%Y-%m-%d %H:%M:%S")), build: .fullDisplayName }' "$1"
 ```
 
+An analysis tool is being built to process the output further.
+
+```
+jenkins-queue-health-analysis builds.json
+```
+
 ## Current ideas
 
 I'm not sure that these will all pan out, but these are applications I can
