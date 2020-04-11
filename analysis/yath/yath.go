@@ -6,9 +6,11 @@ import (
 	"github.com/colinnewell/jenkins-queue-health/analysis"
 )
 
+// Analyser for yath test output (a Perl test runner)
 type Analyser struct {
 }
 
+// AnalyseBuild fills in the analysis fields after examining the ConsoleLog
 func (yath *Analyser) AnalyseBuild(an *analysis.AnalysedBuild) error {
 	failSummaryPattern := `(?m)The following test jobs failed:(?:\s+\[[-0-9A-F]+\] (\d+): (.*)$)+`
 	r := regexp.MustCompile(failSummaryPattern)
