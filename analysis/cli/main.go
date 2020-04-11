@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/colinnewell/jenkins-queue-health/analysis"
+	"github.com/colinnewell/jenkins-queue-health/analysis/human"
 	"github.com/colinnewell/jenkins-queue-health/analysis/yath"
 	"github.com/colinnewell/jenkins-queue-health/jenkins"
 )
@@ -65,12 +66,16 @@ func readBuild(fileContents []byte) ([]analysis.AnalysedBuild, error) {
 	}
 	analysed = make([]analysis.AnalysedBuild, len(builds))
 	var yath yath.Analyser
+	var human human.Analyser
 	for i, b := range builds {
 		// FIXME: do I want to allow some optimisation based on job?
 		// perhaps have some kind of analyser object?
 		analysed[i] = analysis.AnalyseBuild(b)
-		err := yath.AnalyseBuild(&analysed[i])
-		if err != nil {
+
+		if err := yath.AnalyseBuild(&analysed[i]); err != nil {
+			return analysed, err
+		}
+		if err := human.AnalyseBuild(&analysed[i]); err != nil {
 			return analysed, err
 		}
 	}
