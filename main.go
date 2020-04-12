@@ -14,11 +14,13 @@ var password string
 var project string
 var url string
 var user string
+var build string
 
 func main() {
 	flag.StringVar(&user, "user", "", "Username")
 	flag.StringVar(&password, "password", "", "Token password")
 	flag.StringVar(&project, "project", "", "Jenkins project")
+	flag.StringVar(&build, "build", "", "Jenkins build")
 	flag.StringVar(&url, "url", "http://localhost:8080", "Jenkins url")
 	flag.Parse()
 
@@ -32,9 +34,23 @@ func main() {
 		JenkinsURL: url,
 	}
 
-	builds, err := j.BuildsForProject(project)
-	if err != nil {
-		log.Fatal(err)
+	var builds []jenkins.BuildInfo
+	if build != "" {
+		build, err := j.GetBuildInfo(j.BuildUrl(project, build))
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = j.ConsoleLog(&build)
+		if err != nil {
+			log.Fatal(err)
+		}
+		builds = []jenkins.BuildInfo{build}
+	} else {
+		var err error
+		builds, err = j.BuildsForProject(project)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	bytes, err := json.Marshal(builds)
 	if err != nil {

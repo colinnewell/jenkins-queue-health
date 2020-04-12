@@ -63,6 +63,15 @@ func (jenkins *API) Runs(jobName string) ([]string, error) {
 	return urls, nil
 }
 
+// BuildUrl construct the url for the build in Jenkins
+func (jenkins *API) BuildUrl(jobName string, build string) string {
+	return fmt.Sprintf("%s/job/%s/%s/",
+		jenkins.JenkinsURL,
+		jobName,
+		build,
+	)
+}
+
 // ConsoleLog fills in the builds ConsoleLog.
 func (jenkins *API) ConsoleLog(build *BuildInfo) error {
 	url := fmt.Sprintf("%slogText/progressiveText?start=0", build.URL)
