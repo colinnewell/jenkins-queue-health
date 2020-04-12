@@ -63,8 +63,8 @@ func (jenkins *API) Runs(jobName string) ([]string, error) {
 	return urls, nil
 }
 
-// BuildUrl construct the url for the build in Jenkins
-func (jenkins *API) BuildUrl(jobName string, build string) string {
+// BuildURL construct the url for the build in Jenkins
+func (jenkins *API) BuildURL(jobName string, build string) string {
 	return fmt.Sprintf("%s/job/%s/%s/",
 		jenkins.JenkinsURL,
 		jobName,

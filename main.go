@@ -36,7 +36,7 @@ func main() {
 
 	var builds []jenkins.BuildInfo
 	if build != "" {
-		build, err := j.GetBuildInfo(j.BuildUrl(project, build))
+		build, err := j.GetBuildInfo(j.BuildURL(project, build))
 		if err != nil {
 			log.Fatal(err)
 		}
