@@ -16,4 +16,4 @@ test:
 	go test
 
 install:
-	cp jenkins-queue-health /usr/local/bin
+	cp jenkins-queue-health jenkins-queue-health-analysis /usr/local/bin
