@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strconv"
+	"time"
 
 	resty "github.com/go-resty/resty/v2"
 )
@@ -88,6 +90,23 @@ func (jenkins *API) ConsoleLog(build *BuildInfo) error {
 	return nil
 }
 
+// GetLogChunk pull the a chunk of the console log and return the response so
+// that it can be checked to see if there is more.
+func (jenkins *API) GetLogChunk(build *BuildInfo, offset uint64) (*resty.Response, error) {
+	url := fmt.Sprintf("%slogText/progressiveText?start=%d", build.URL, offset)
+	r, err := jenkins.Client.R().Get(url)
+	if err != nil {
+		return r, err
+	}
+	if r.IsError() {
+		return r, fmt.Errorf(
+			"Error getting console: %s - %s", r.Status(), r,
+		)
+	}
+	build.ConsoleLog = build.ConsoleLog + r.String()
+	return r, nil
+}
+
 // GetBuildInfo gather the headline build info from the build url
 func (jenkins *API) GetBuildInfo(buildURL string) (BuildInfo, error) {
 	b := BuildInfo{URL: buildURL}
@@ -130,4 +149,48 @@ func (jenkins *API) BuildsForProject(project string) ([]BuildInfo, error) {
 		builds = append(builds, build)
 	}
 	return builds, nil
+}
+
+// MonitorLog keep following the log and call callback until it's all
+// retrieved.
+func (jenkins *API) MonitorLog(build *BuildInfo,
+	callback func(*BuildInfo, bool) error) error {
+
+	var offset uint64
+	r, err := jenkins.GetLogChunk(build, offset)
+	if err != nil {
+		return err
+	}
+	moreToCome := true
+	for moreToCome {
+		headers := r.Header()
+		moreData, ok := headers["X-More-Data"]
+		moreToCome = ok && moreData[0] == "true"
+		if r.Size() > 0 {
+			// only call the callback if we have new data
+			err := callback(build, moreToCome)
+			if err != nil {
+				return err
+			}
+		}
+		if moreToCome {
+			if r.Size() == 0 {
+				// pause to wait for more content
+				time.Sleep(5 * time.Second)
+			}
+			offsetString, ok := headers["X-Text-Size"]
+			if !ok {
+				return fmt.Errorf("No X-Text-Size returned despite indicating there is more data to read")
+			}
+			offset, err := strconv.ParseUint(offsetString[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			r, err = jenkins.GetLogChunk(build, offset)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return err
 }
