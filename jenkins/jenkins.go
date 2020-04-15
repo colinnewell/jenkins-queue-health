@@ -153,7 +153,7 @@ func (jenkins *API) BuildsForProject(project string) ([]BuildInfo, error) {
 
 // MonitorLog keep following the log and call callback until it's all
 // retrieved.
-func (jenkins *API) MonitorLog(build *BuildInfo,
+func (jenkins *API) MonitorLog(build *BuildInfo, pause int64,
 	callback func(*BuildInfo, bool) error) error {
 
 	var offset uint64
@@ -176,7 +176,7 @@ func (jenkins *API) MonitorLog(build *BuildInfo,
 		if moreToCome {
 			if r.Size() == 0 {
 				// pause to wait for more content
-				time.Sleep(5 * time.Second)
+				time.Sleep(time.Duration(pause) * time.Second)
 			}
 			offsetString, ok := headers["X-Text-Size"]
 			if !ok {

@@ -15,12 +15,14 @@ var password string
 var project string
 var url string
 var user string
+var pause int64
 
 func main() {
-	flag.StringVar(&user, "user", "", "Username")
 	flag.StringVar(&password, "password", "", "Token password")
+	flag.Int64Var(&pause, "pause", 60, "Polling interval")
 	flag.StringVar(&project, "project", "", "Jenkins project")
 	flag.StringVar(&url, "url", "http://localhost:8080", "Jenkins url")
+	flag.StringVar(&user, "user", "", "Username")
 	flag.Parse()
 
 	client := resty.New()
@@ -50,7 +52,7 @@ func main() {
 					}
 					fmt.Printf("Monitoring %s\n", build.FullDisplayName)
 					errorIndex := 0
-					err := j.MonitorLog(&build,
+					err := j.MonitorLog(&build, pause,
 						func(build *jenkins.BuildInfo, moreToCome bool) error {
 							if foundAt := strings.Index(
 								build.ConsoleLog[errorIndex:], "FAILED",
@@ -83,7 +85,7 @@ func main() {
 				}(build)
 			}
 		}
-		time.Sleep(5 * time.Second)
+		time.Sleep(time.Duration(pause) * time.Second)
 		builds, err = j.BuildsForProject(project)
 		if err != nil {
 			log.Fatal(err)
