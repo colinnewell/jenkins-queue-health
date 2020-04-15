@@ -20,6 +20,9 @@ Failing that you can read that file for the commands used to build and test.
 
 ## Running
 
+
+### Download data
+
 ```
 jenkins-queue-health -url https://jenkins -project gerrit -user uname -password apitoken
 ```
@@ -37,12 +40,28 @@ intention is to move a large chunk of that into the tooling.
 jq '.[] | select(.log | contains("Solr request failed - Timed out while waiting for socket to become ready for reading")) | { builtOn: .builtOn, timestamp: (.timestamp / 1000 | strftime("%Y-%m-%d %H:%M:%S")), build: .fullDisplayName }' "$1"
 ```
 
+### Analysis
+
 An analysis tool is being built to process the output further.
 
 ```
 jenkins-queue-health-analysis builds.json
 jenkins-queue-health-analysis fails.json | jq '.[] | select( .spuriousFail == false) | .failureSummary '
 
+```
+
+### Watching
+
+The watcher is a program that sites constantly polling a pipeline to report on
+the builds running in a project.  It will report the end state of jobs as they
+conclude.
+
+It also reports when the string `FAILED` appears in the console output.  This
+is for when you have a multistage pipeline that may retry a stage a few times
+on failure to allow you to spot that it's thrashing.
+
+```
+jenkins-watcher -url https://jenkins -user uname -password apitoken -project gerrit
 ```
 
 ## Current ideas
@@ -64,3 +83,6 @@ think of that would benefit from being able to analyse Jenkins build results.
   would require analysing succesfull logs too).
 * Early warning on builds running and failing.  Especially useful for things
   that retry.
+* Perhaps hook up the watcher to a website to provide a nice dashboard?
+* Make watcher more configurable so that we can spot more events and report
+  what's going on.
