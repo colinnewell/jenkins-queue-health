@@ -42,7 +42,8 @@ jq '.[] | select(.log | contains("Solr request failed - Timed out while waiting 
 
 ### Analysis
 
-An analysis tool is being built to process the output further.
+An analysis tool is being built to process the output further.  This extends
+the json with new fields.
 
 ```
 jenkins-queue-health-analysis builds.json
