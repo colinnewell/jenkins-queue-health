@@ -62,7 +62,7 @@ is for when you have a multistage pipeline that may retry a stage a few times
 on failure to allow you to spot that it's thrashing.
 
 ```
-jenkins-watcher -url https://jenkins -user uname -password apitoken -project gerrit
+jenkins-watcher --url https://jenkins --user uname --password apitoken --project gerrit
 ```
 
 ## Current ideas

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"strings"
@@ -9,33 +8,56 @@ import (
 
 	"github.com/colinnewell/jenkins-queue-health/jenkins"
 	resty "github.com/go-resty/resty/v2"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
-var password string
-var project string
-var url string
-var user string
-var pause int64
+type config struct {
+	Password string
+	Project  string
+	URL      string
+	User     string
+	Pause    int64
+	Triggers map[string]string
+}
+
+var c config
 
 func main() {
-	flag.StringVar(&password, "password", "", "Token password")
-	flag.Int64Var(&pause, "pause", 60, "Polling interval")
-	flag.StringVar(&project, "project", "", "Jenkins project")
-	flag.StringVar(&url, "url", "http://localhost:8080", "Jenkins url")
-	flag.StringVar(&user, "user", "", "Username")
-	flag.Parse()
+	viper.SetConfigName("jenkins-watcher.toml")
+	viper.AddConfigPath("$HOME")
+	viper.AddConfigPath(".")
+	viper.SetConfigType("toml")
+	// FIXME: set some defaults
+	viper.AutomaticEnv()
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatal(err)
+	}
+
+	pflag.String("password", "", "Token password")
+	pflag.Int64("pause", 60, "Polling interval")
+	pflag.String("project", "", "Jenkins project")
+	pflag.String("url", "http://localhost:8080", "Jenkins url")
+	pflag.String("user", "", "Username")
+	pflag.Parse()
+	if err := viper.BindPFlags(pflag.CommandLine); err != nil {
+		log.Fatal(err)
+	}
+	if err := viper.Unmarshal(&c); err != nil {
+		log.Fatal(err)
+	}
 
 	client := resty.New()
-	if user != "" && password != "" {
-		client.SetBasicAuth(user, password)
+	if c.User != "" && c.Password != "" {
+		client.SetBasicAuth(c.User, c.Password)
 		client.SetDisableWarn(true)
 	}
 	j := &jenkins.API{
 		Client:     client,
-		JenkinsURL: url,
+		JenkinsURL: c.URL,
 	}
 
-	builds, err := j.BuildsForProject(project)
+	builds, err := j.BuildsForProject(c.Project)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,7 +74,7 @@ func main() {
 					}
 					fmt.Printf("Monitoring %s\n", build.FullDisplayName)
 					errorIndex := 0
-					err := j.MonitorLog(&build, pause,
+					err := j.MonitorLog(&build, c.Pause,
 						func(build *jenkins.BuildInfo, moreToCome bool) error {
 							if foundAt := strings.Index(
 								build.ConsoleLog[errorIndex:], "FAILED",
@@ -85,8 +107,8 @@ func main() {
 				}(build)
 			}
 		}
-		time.Sleep(time.Duration(pause) * time.Second)
-		builds, err = j.BuildsForProject(project)
+		time.Sleep(time.Duration(c.Pause) * time.Second)
+		builds, err = j.BuildsForProject(c.Project)
 		if err != nil {
 			log.Fatal(err)
 		}
