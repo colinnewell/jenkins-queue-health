@@ -7,6 +7,7 @@ require (
 	github.com/go-resty/resty/v2 v2.2.0
 	github.com/golang/protobuf v1.3.5 // indirect
 	github.com/jarcoal/httpmock v1.0.5
+	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/mitchellh/mapstructure v1.2.2 // indirect
 	github.com/onsi/ginkgo v1.12.0
 	github.com/onsi/gomega v1.9.0
