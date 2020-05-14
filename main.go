@@ -6,8 +6,9 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"time"
 
-	_ "github.com/mattn/go-sqlite3"
+	sqlite3 "github.com/mattn/go-sqlite3"
 
 	"github.com/colinnewell/jenkins-queue-health/jenkins"
 	resty "github.com/go-resty/resty/v2"
@@ -76,11 +77,22 @@ func main() {
 
 		defer stmt.Close()
 		for _, b := range builds {
+			t := time.Unix(b.Timestamp/1000, b.Timestamp%1000)
 			_, err := stmt.Exec(b.URL, b.ConsoleLog, b.BuiltOn,
-				b.Duration, b.FullDisplayName, b.Timestamp, b.Timestamp,
+				b.Duration, b.FullDisplayName, t,
 				b.Result)
 			if err != nil {
-				log.Fatal(err)
+				switch e := err.(type) {
+				case sqlite3.Error:
+					if e.Code == 19 && e.ExtendedCode == 2067 {
+						// UNIQUE constraint failed
+						// already got this build, no problem.
+					} else {
+						log.Fatal(err)
+					}
+				default:
+					log.Fatal(err)
+				}
 			}
 		}
 	} else {
