@@ -20,11 +20,18 @@ type AnalysedBuild struct {
 	// passed test list
 	// provide clearer info from the exisitng field
 	// More human readable version of when the build was run
-	FailureSummary   string `json:"failureSummary"`
-	TimeRunReadable  string `json:"timeReadable"`
-	DurationReadable string `json:"durationReadable"`
+	FailureSummary   string       `json:"failureSummary"`
+	TimeRunReadable  string       `json:"timeReadable"`
+	DurationReadable string       `json:"durationReadable"`
+	Stages           []BuildStage `json:"stages,omitempty"`
 
 	jenkins.BuildInfo
+}
+
+type BuildStage struct {
+	// FIXME: add timestamps for start/stop
+	Name string `json:"name"`
+	Log  string `json:"log"`
 }
 
 // AnalyseBuild turn the BuildInfo object into an AnalysedBuild one with extra

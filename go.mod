@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/go-resty/resty/v2 v2.2.0
 	github.com/golang/protobuf v1.3.5 // indirect
+	github.com/google/go-cmp v0.2.0
 	github.com/jarcoal/httpmock v1.0.5
 	github.com/onsi/ginkgo v1.12.0
 	github.com/onsi/gomega v1.9.0
