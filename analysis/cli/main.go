@@ -88,6 +88,8 @@ func readBuild(fileContents []byte) ([]analysis.AnalysedBuild, error) {
 		if err := spurious.AnalyseBuild(&analysed[i]); err != nil {
 			return analysed, err
 		}
+		// things to look out for
+		// build terminated.
 	}
 	return analysed, err
 }

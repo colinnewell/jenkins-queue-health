@@ -29,10 +29,36 @@ func (a *Analyser) AnalyseBuild(an *analysis.AnalysedBuild) error {
 		if len(matches) > 1 {
 			name = matches[1]
 		}
-		an.Stages = append(an.Stages, analysis.BuildStage{
+		bs := analysis.BuildStage{
 			Name: name,
 			Log:  stage,
-		})
+		}
+		ExtractLockInfo(&bs)
+		an.Stages = append(an.Stages, bs)
 	}
 	return nil
+}
+
+func ExtractLockInfo(stage *analysis.BuildStage) {
+	lockText := regexp.MustCompile(`(?m)\[Pipeline\] (// )?lock\r\n`)
+	lockChunks := lockText.Split(stage.Log, -1)
+	if len(lockChunks) < 2 {
+		return
+	}
+	for _, chunk := range lockChunks {
+		if chunk == "" {
+			continue
+		}
+		lockName := `(?m)Trying to acquire lock on \[([^\]]+)\]`
+		r := regexp.MustCompile(lockName)
+		matches := r.FindStringSubmatch(chunk)
+		var name string
+		if len(matches) > 1 {
+			name = matches[1]
+		}
+		stage.LockedSteps = append(stage.LockedSteps, analysis.LockedStep{
+			Name: name,
+			Log:  chunk,
+		})
+	}
 }

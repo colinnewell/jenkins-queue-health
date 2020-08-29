@@ -30,6 +30,12 @@ type AnalysedBuild struct {
 
 type BuildStage struct {
 	// FIXME: add timestamps for start/stop
+	Name        string       `json:"name"`
+	Log         string       `json:"log"`
+	LockedSteps []LockedStep `json:"lockedSteps,omitempty"`
+}
+
+type LockedStep struct {
 	Name string `json:"name"`
 	Log  string `json:"log"`
 }
