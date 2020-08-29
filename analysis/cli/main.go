@@ -10,6 +10,7 @@ import (
 	"github.com/colinnewell/jenkins-queue-health/analysis"
 	"github.com/colinnewell/jenkins-queue-health/analysis/human"
 	"github.com/colinnewell/jenkins-queue-health/analysis/spurious"
+	"github.com/colinnewell/jenkins-queue-health/analysis/stages"
 	"github.com/colinnewell/jenkins-queue-health/analysis/yath"
 	"github.com/colinnewell/jenkins-queue-health/jenkins"
 )
@@ -69,11 +70,15 @@ func readBuild(fileContents []byte) ([]analysis.AnalysedBuild, error) {
 	var yath yath.Analyser
 	var human human.Analyser
 	var spurious spurious.Analyser
+	var stages stages.Analyser
 	for i, b := range builds {
 		// FIXME: do I want to allow some optimisation based on job?
 		// perhaps have some kind of analyser object?
 		analysed[i] = analysis.AnalyseBuild(b)
 
+		if err := stages.AnalyseBuild(&analysed[i]); err != nil {
+			return analysed, err
+		}
 		if err := yath.AnalyseBuild(&analysed[i]); err != nil {
 			return analysed, err
 		}
