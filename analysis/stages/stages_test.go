@@ -25,3 +25,33 @@ func TestNoStagesPresent(t *testing.T) {
 	}
 
 }
+
+func TestCoupleOfStages(t *testing.T) {
+	build := analysis.AnalysedBuild{}
+	build.ConsoleLog = "foo\r\n[Pipeline] stage\r\n[Pipeline] { (Git)\r\nsomething\r\n[Pipeline] }\r\n[Pipeline] // stage\r\n[Pipeline] stage\r\n[Pipeline] { (Test)\r\n[2020-08-27T09:16:54.990Z]  > git --version # timeout=10\r\n[Pipeline] }\r\n[Pipeline] // stage\r\n[Pipeline] End of Pipeline\r\nFinished: NOT_BUILT"
+	a := stages.Analyser{}
+
+	err := a.AnalyseBuild(&build)
+	if err != nil {
+		t.Error(err)
+	}
+
+	expectedStages := []analysis.BuildStage{
+		analysis.BuildStage{
+			Log:  "foo",
+			Name: "",
+		},
+		analysis.BuildStage{
+			Log:  "[Pipeline] { (Git)\r\nsomething\r\n[Pipeline] }\r\n[Pipeline] // stage",
+			Name: "Git",
+		},
+		analysis.BuildStage{
+			Log:  "[Pipeline] { (Test)\r\n[2020-08-27T09:16:54.990Z]  > git --version # timeout=10\r\n[Pipeline] }\r\n[Pipeline] // stage\r\n[Pipeline] End of Pipeline\r\nFinished: NOT_BUILT",
+			Name: "Test",
+		},
+	}
+	if diff := cmp.Diff(build.Stages, expectedStages); diff != "" {
+		t.Errorf("Different json (-got +expected):\n%s\n", diff)
+	}
+
+}
