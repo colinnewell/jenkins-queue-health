@@ -38,20 +38,22 @@ func TestCoupleOfStages(t *testing.T) {
 
 	expectedStages := []analysis.BuildStage{
 		analysis.BuildStage{
-			Log:  "foo",
+			Log:  "foo\r\n",
 			Name: "",
 		},
 		analysis.BuildStage{
-			Log:  "[Pipeline] { (Git)\r\nsomething\r\n[Pipeline] }\r\n[Pipeline] // stage",
+			Log:  "[Pipeline] { (Git)\r\nsomething\r\n[Pipeline] }\r\n",
 			Name: "Git",
 		},
 		analysis.BuildStage{
-			Log:  "[Pipeline] { (Test)\r\n[2020-08-27T09:16:54.990Z]  > git --version # timeout=10\r\n[Pipeline] }\r\n[Pipeline] // stage\r\n[Pipeline] End of Pipeline\r\nFinished: NOT_BUILT",
+			Log:  "[Pipeline] { (Test)\r\n[2020-08-27T09:16:54.990Z]  > git --version # timeout=10\r\n[Pipeline] }\r\n",
 			Name: "Test",
+		},
+		analysis.BuildStage{
+			Log: "[Pipeline] End of Pipeline\r\nFinished: NOT_BUILT",
 		},
 	}
 	if diff := cmp.Diff(build.Stages, expectedStages); diff != "" {
 		t.Errorf("Different json (-got +expected):\n%s\n", diff)
 	}
-
 }

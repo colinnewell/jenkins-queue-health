@@ -2,7 +2,6 @@ package stages
 
 import (
 	"regexp"
-	"strings"
 
 	"github.com/colinnewell/jenkins-queue-health/analysis"
 )
@@ -14,11 +13,15 @@ type Analyser struct {
 // AnalyseBuild fills in the analysis fields after examining the ConsoleLog
 func (a *Analyser) AnalyseBuild(an *analysis.AnalysedBuild) error {
 	// rip through the log and turn it into stages
-	stages := strings.Split(an.ConsoleLog, "\r\n[Pipeline] stage\r\n")
+	pipelineStage := regexp.MustCompile(`(?m)\[Pipeline\] (// )?stage\r\n`)
+	stages := pipelineStage.Split(an.ConsoleLog, -1)
 	if len(stages) < 2 {
 		return nil
 	}
 	for _, stage := range stages {
+		if stage == "" {
+			continue
+		}
 		pipelineName := `(?m)\[Pipeline\] { \(([^)]+)\)`
 		r := regexp.MustCompile(pipelineName)
 		matches := r.FindStringSubmatch(stage)
