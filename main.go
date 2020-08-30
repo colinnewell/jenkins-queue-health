@@ -15,6 +15,7 @@ var project string
 var url string
 var user string
 var build string
+var successToo bool
 
 func main() {
 	flag.StringVar(&user, "user", "", "Username")
@@ -22,6 +23,7 @@ func main() {
 	flag.StringVar(&project, "project", "", "Jenkins project")
 	flag.StringVar(&build, "build", "", "Jenkins build")
 	flag.StringVar(&url, "url", "http://localhost:8080", "Jenkins url")
+	flag.BoolVar(&successToo, "success-too", false, "Successful builds too")
 	flag.Parse()
 
 	client := resty.New()
@@ -47,7 +49,7 @@ func main() {
 		builds = []jenkins.BuildInfo{build}
 	} else {
 		var err error
-		builds, err = j.BuildsForProject(project)
+		builds, err = j.BuildsForProject(project, successToo)
 		if err != nil {
 			log.Fatal(err)
 		}

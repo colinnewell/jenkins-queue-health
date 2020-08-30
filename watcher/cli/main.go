@@ -35,7 +35,7 @@ func main() {
 		JenkinsURL: url,
 	}
 
-	builds, err := j.BuildsForProject(project)
+	builds, err := j.BuildsForProject(project, false)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -86,7 +86,7 @@ func main() {
 			}
 		}
 		time.Sleep(time.Duration(pause) * time.Second)
-		builds, err = j.BuildsForProject(project)
+		builds, err = j.BuildsForProject(project, false)
 		if err != nil {
 			log.Fatal(err)
 		}

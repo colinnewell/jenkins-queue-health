@@ -128,7 +128,7 @@ func (jenkins *API) GetBuildInfo(buildURL string) (BuildInfo, error) {
 
 // BuildsForProject download a list of builds for the project filling in the
 // ConsoleLog for any builds that aren't marked as success.
-func (jenkins *API) BuildsForProject(project string) ([]BuildInfo, error) {
+func (jenkins *API) BuildsForProject(project string, successToo bool) ([]BuildInfo, error) {
 	urls, err := jenkins.Runs(project)
 	if err != nil {
 		log.Fatal(err)
@@ -139,7 +139,7 @@ func (jenkins *API) BuildsForProject(project string) ([]BuildInfo, error) {
 		if err != nil {
 			return builds, err
 		}
-		if build.Result != "SUCCESS" {
+		if successToo || build.Result != "SUCCESS" {
 			// grab log so we can examine reasons for failure
 			err := jenkins.ConsoleLog(&build)
 			if err != nil {
