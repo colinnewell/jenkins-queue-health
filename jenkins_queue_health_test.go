@@ -58,7 +58,7 @@ var _ = Describe("Jenkins Client", func() {
 	var _ = Describe("Get Builds", func() {
 
 		It("Should retrieve a list of builds", func() {
-			builds, err := j.BuildsForProject("test")
+			builds, err := j.BuildsForProject("test", false)
 
 			expected := []jenkins.BuildInfo{
 				{
