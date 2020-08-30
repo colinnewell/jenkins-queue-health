@@ -39,6 +39,8 @@ func (a *Analyser) AnalyseBuild(an *analysis.AnalysedBuild) error {
 	return nil
 }
 
+// ExtractLockInfo find any locks in use and divide up the logs into sections
+// with them.
 func ExtractLockInfo(stage *analysis.BuildStage) {
 	lockText := regexp.MustCompile(`(?m)\[Pipeline\] (// )?lock\r\n`)
 	lockChunks := lockText.Split(stage.Log, -1)

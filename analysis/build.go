@@ -28,6 +28,8 @@ type AnalysedBuild struct {
 	jenkins.BuildInfo
 }
 
+// BuildStage when jenkins file uses stages the logs can be divided up between
+// them.
 type BuildStage struct {
 	// FIXME: add timestamps for start/stop
 	Name        string       `json:"name"`
@@ -35,6 +37,7 @@ type BuildStage struct {
 	LockedSteps []LockedStep `json:"lockedSteps,omitempty"`
 }
 
+// LockedStep logs for the sections of the build with locks.
 type LockedStep struct {
 	Name string `json:"name"`
 	Log  string `json:"log"`
