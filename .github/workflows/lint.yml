@@ -10,4 +10,4 @@ jobs:
         with:
           go-version: stable
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v2
+        uses: golangci/golangci-lint-action@v7
