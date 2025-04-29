@@ -2,17 +2,17 @@ all: jenkins-queue-health jenkins-queue-health-analysis jenkins-watcher \
 		jenkins-queue-summary
 
 jenkins-queue-health-analysis: analysis/cli/main.go jenkins/jenkins.go \
-	analysis/build.go analysis/*/*.go
+	analysis/build.go analysis/*/*.go go.*
 	go build -o jenkins-queue-health-analysis analysis/cli/main.go
 
 jenkins-queue-summary: summary/cli/main.go jenkins/jenkins.go \
-	analysis/build.go analysis/*/*.go summary/build.go
+	analysis/build.go analysis/*/*.go summary/build.go go.*
 	go build -o jenkins-queue-summary summary/cli/main.go
 
-jenkins-queue-health: main.go jenkins/jenkins.go
+jenkins-queue-health: main.go jenkins/jenkins.go go.*
 	go build -o jenkins-queue-health main.go
 
-jenkins-watcher: watcher/cli/main.go jenkins/jenkins.go
+jenkins-watcher: watcher/cli/main.go jenkins/jenkins.go go.*
 	go build -o jenkins-watcher watcher/cli/main.go
 
 lint:
