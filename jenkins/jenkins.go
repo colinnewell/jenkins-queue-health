@@ -50,7 +50,7 @@ func (jenkins *API) Runs(jobName string) ([]string, error) {
 	}
 	if r.IsError() {
 		return nil, fmt.Errorf(
-			"Error getting job runs: %s - %s", r.Status(), r,
+			"error getting job runs: %s - %s", r.Status(), r,
 		)
 	}
 	var v runs
@@ -83,7 +83,7 @@ func (jenkins *API) ConsoleLog(build *BuildInfo) error {
 	}
 	if r.IsError() {
 		return fmt.Errorf(
-			"Error getting console: %s - %s", r.Status(), r,
+			"error getting console: %s - %s", r.Status(), r,
 		)
 	}
 	build.ConsoleLog = r.String()
@@ -100,7 +100,7 @@ func (jenkins *API) GetLogChunk(build *BuildInfo, offset uint64) (*resty.Respons
 	}
 	if r.IsError() {
 		return r, fmt.Errorf(
-			"Error getting console: %s - %s", r.Status(), r,
+			"error getting console: %s - %s", r.Status(), r,
 		)
 	}
 	build.ConsoleLog = build.ConsoleLog + r.String()
@@ -118,7 +118,7 @@ func (jenkins *API) GetBuildInfo(buildURL string) (BuildInfo, error) {
 	}
 	if r.IsError() {
 		return b, fmt.Errorf(
-			"Error getting build info: %s - %s", r.Status(), r,
+			"error getting build info: %s - %s", r.Status(), r,
 		)
 	}
 
@@ -180,7 +180,7 @@ func (jenkins *API) MonitorLog(build *BuildInfo, pause int64,
 			}
 			offsetString, ok := headers["X-Text-Size"]
 			if !ok {
-				return fmt.Errorf("No X-Text-Size returned despite indicating there is more data to read")
+				return fmt.Errorf("no X-Text-Size returned despite indicating there is more data to read")
 			}
 			offset, err := strconv.ParseUint(offsetString[0], 10, 64)
 			if err != nil {

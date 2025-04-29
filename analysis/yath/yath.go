@@ -14,7 +14,7 @@ type Analyser struct {
 func (a *Analyser) AnalyseBuild(an *analysis.AnalysedBuild) error {
 	failSummaryPattern := `(?m)The following test jobs failed:(?:\s+\[[-0-9A-F]+\] \d+: .*$)+`
 	r := regexp.MustCompile(failSummaryPattern)
-	matches := r.FindAllString(an.BuildInfo.ConsoleLog, -1)
+	matches := r.FindAllString(an.ConsoleLog, -1)
 	for _, v := range matches {
 		an.FailureSummary = an.FailureSummary + v + "\n"
 	}

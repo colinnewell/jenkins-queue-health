@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 
@@ -25,24 +25,24 @@ func main() {
 func processFiles(files []string) error {
 	var builds []analysis.AnalysedBuild
 	if len(files) == 0 {
-		dat, err := ioutil.ReadAll(os.Stdin)
+		dat, err := io.ReadAll(os.Stdin)
 		if err != nil {
-			return fmt.Errorf("Failed to read from stdin - %v", err)
+			return fmt.Errorf("failed to read from stdin - %v", err)
 		}
 		builds, err = readBuild(dat)
 		if err != nil {
-			return fmt.Errorf("Failed to process - %v", err)
+			return fmt.Errorf("failed to process - %v", err)
 		}
 	} else {
 		for _, f := range files {
 			// FIXME: support - as a filename for stdin
-			dat, err := ioutil.ReadFile(f)
+			dat, err := os.ReadFile(f)
 			if err != nil {
-				return fmt.Errorf("Failed to read %s - %v", f, err)
+				return fmt.Errorf("failed to read %s - %v", f, err)
 			}
 			b, err := readBuild(dat)
 			if err != nil {
-				return fmt.Errorf("Failed to process %s - %v", f, err)
+				return fmt.Errorf("failed to process %s - %v", f, err)
 			}
 			builds = append(builds, b...)
 		}
